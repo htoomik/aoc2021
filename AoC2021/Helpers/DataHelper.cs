@@ -16,11 +16,24 @@ namespace AoC2021.Helpers
             return SplitToLines(data).Select(int.Parse).ToList();
         }
 
+        public static List<string> ReadLines(int day)
+        {
+            var path = GetPath(day);
+            return File.ReadAllLines(path).ToList();
+        }
+
         public static List<int> ReadIntegers(int day)
         {
-            var fileName = $"input{day:00}.txt";
-            var content = File.ReadAllText($"c:\\code\\aoc2021\\aoc2021\\data\\{fileName}");
+            var path = GetPath(day);
+            var content = File.ReadAllText(path);
             return SplitToIntegers(content);
+        }
+
+        private static string GetPath(int day)
+        {
+            var fileName = $"input{day:00}.txt";
+            var path = $"c:\\code\\aoc2021\\aoc2021\\data\\{fileName}";
+            return path;
         }
     }
 }
