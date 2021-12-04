@@ -23,7 +23,7 @@ namespace AoC2021.Tests
 269
 260
 263";
-            var input = DataHelper.SplitToIntegers(data);
+            var input = DataHelper.SplitLinesToIntegers(data);
             var result = new Day01().Solve1(input);
             result.ShouldBe(7);
         }
@@ -50,7 +50,7 @@ namespace AoC2021.Tests
 269
 260
 263";
-            var input = DataHelper.SplitToIntegers(data);
+            var input = DataHelper.SplitLinesToIntegers(data);
             var result = new Day01().Solve2(input);
             result.ShouldBe(5);
         }

@@ -11,7 +11,7 @@ namespace AoC2021.Helpers
             return data.Trim().Replace("\r\n", "\n").Split("\n").ToList();
         }
 
-        public static List<int> SplitToIntegers(string data)
+        public static List<int> SplitLinesToIntegers(string data)
         {
             return SplitToLines(data).Select(int.Parse).ToList();
         }

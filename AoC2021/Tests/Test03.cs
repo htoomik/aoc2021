@@ -24,7 +24,7 @@ namespace AoC2021.Tests
 11001
 00010
 01010";
-            var input = DataHelper.SplitToLines(data);
+            var input = DataHelper.SplitLines(data);
             var result = new Day03().Solve(input);
             result.ShouldBe(198);
         }
@@ -53,7 +53,7 @@ namespace AoC2021.Tests
 11001
 00010
 01010";
-            var input = DataHelper.SplitToLines(data);
+            var input = DataHelper.SplitLines(data);
             var result = new Day03().Solve2(input);
             result.ShouldBe(230);
         }

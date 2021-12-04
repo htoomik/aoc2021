@@ -18,7 +18,7 @@ forward 8
 up 3
 down 8
 forward 2";
-            var input = DataHelper.SplitToLines(data);
+            var input = DataHelper.SplitLines(data);
             var result = new Day02().Solve(input);
             result.ShouldBe(150);
         }
@@ -41,7 +41,7 @@ forward 8
 up 3
 down 8
 forward 2";
-            var input = DataHelper.SplitToLines(data);
+            var input = DataHelper.SplitLines(data);
             var result = new Day02().Solve2(input);
             result.ShouldBe(900);
         }
