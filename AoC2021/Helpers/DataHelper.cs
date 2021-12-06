@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,6 +16,14 @@ namespace AoC2021.Helpers
         public static List<int> SplitLinesToIntegers(string data)
         {
             return SplitLines(data).Select(int.Parse).ToList();
+        }
+
+        public static List<int> SplitToIntegers(string data, char separator = ',')
+        {
+            return data
+                .Split(separator, StringSplitOptions.RemoveEmptyEntries)
+                .Select(int.Parse)
+                .ToList();
         }
 
         public static List<string> ReadLines(int day)

@@ -61,7 +61,7 @@ namespace AoC2021.Code
 
         private static List<int> ParseNumbers(string line)
         {
-            return line.Split(',').Select(int.Parse).ToList();
+            return DataHelper.SplitToIntegers(line);
         }
 
         private Board ParseBoard(string chunk)
@@ -91,7 +91,7 @@ namespace AoC2021.Code
 
                 for (var i = 0; i < size; i++)
                 {
-                    var nums = lines[i].Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToList();
+                    var nums = DataHelper.SplitToIntegers(lines[i], ' ');
                     for (var j = 0; j < nums.Count; j++)
                     {
                         values[i, j] = nums[j];
