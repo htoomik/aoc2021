@@ -26,6 +26,16 @@ namespace AoC2021.Helpers
                 .ToList();
         }
 
+        public static List<List<int>> SplitToIntegerGrid(string input)
+        {
+            return SplitLines(input)
+                .Select(s => s
+                    .ToCharArray()
+                    .Select(c => (c - 48))
+                    .ToList())
+                .ToList();
+        }
+
         public static List<string> ReadLines(int day)
         {
             var path = GetPath(day);

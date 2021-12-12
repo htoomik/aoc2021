@@ -9,7 +9,7 @@ namespace AoC2021.Code
     {
         public int Solve(string input)
         {
-            var values = Parse(input);
+            var values = DataHelper.SplitToIntegerGrid(input);
 
             var lowPoints = GetLowPoints(values);
 
@@ -41,20 +41,9 @@ namespace AoC2021.Code
             return lowPoints;
         }
 
-        private static List<List<int>> Parse(string input)
-        {
-            return DataHelper
-                .SplitLines(input)
-                .Select(s => s
-                    .ToCharArray()
-                    .Select(c => (c - 48))
-                    .ToList())
-                .ToList();
-        }
-
         public int Solve2(string input)
         {
-            var values = Parse(input);
+            var values = DataHelper.SplitToIntegerGrid(input);
             var lowPoints = GetLowPoints(values);
 
             var basins = new List<HashSet<Coords>>();
