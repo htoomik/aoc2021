@@ -6,49 +6,83 @@ namespace AoC2021.Code
 {
     public class Day14
     {
-        public int Solve(List<string> input)
+        public long Solve(List<string> input)
         {
-            var state = input[0].ToCharArray();
+            return Solve(input, 10);
+        }
+
+        public long Solve2(List<string> input)
+        {
+            return Solve(input, 40);
+        }
+
+        private static long Solve(List<string> input, int rounds)
+        {
+            var chars = input[0].ToCharArray();
             var rules = input
                 .Skip(2)
                 .Select(ParseRule)
                 .ToDictionary(r => new Tuple<char, char>(r.Left, r.Right), r => r.Insert);
 
-            for (var round = 0; round < 10; round++)
+            var state = new Dictionary<Tuple<char, char>, long>();
+
+            for (var i = 0; i < chars.Length - 1; i++)
             {
-                var newState = new List<char>();
+                var left = chars[i];
+                var right = chars[i + 1];
 
-                for (int i = 0; i < state.Length - 1; i++)
+                var tuple = new Tuple<char, char>(left, right);
+                if (!state.ContainsKey(tuple))
                 {
-                    var left = state[i];
-                    var right = state[i + 1];
-
-                    newState.Add(left);
-                    if (rules.TryGetValue(new Tuple<char, char>(left, right), out var insert))
-                    {
-                        newState.Add(insert);
-                    }
+                    state.Add(tuple, 0);
                 }
 
-                newState.Add(state.Last());
-
-                state = newState.ToArray();
+                state[tuple]++;
             }
 
-            var counts = state
-                .GroupBy(c => c)
-                .Select(g => new Tuple<char, int>(g.Key, g.Count()))
-                .OrderBy(t => t.Item2);
+            for (var round = 0; round < rounds; round++)
+            {
+                var newState = new Dictionary<Tuple<char, char>, long>();
 
-            var min = counts.First().Item2;
-            var max = counts.Last().Item2;
+                foreach (var pair in state)
+                {
+                    var insert = rules[pair.Key];
+                    var newLeft = new Tuple<char, char>(pair.Key.Item1, insert);
+                    var newRight = new Tuple<char, char>(insert, pair.Key.Item2);
+
+                    if (!newState.ContainsKey(newLeft))
+                    {
+                        newState[newLeft] = 0;
+                    }
+
+                    if (!newState.ContainsKey(newRight))
+                    {
+                        newState[newRight] = 0;
+                    }
+
+                    newState[newLeft] += pair.Value;
+                    newState[newRight] += pair.Value;
+                }
+
+                state = newState;
+            }
+
+            var counts = state.Keys
+                .Select(s => s.Item1).Distinct()
+                .ToDictionary(c => c, c => 0L);
+
+            foreach (var kvp in state)
+            {
+                counts[kvp.Key.Item1] += kvp.Value;
+            }
+
+            counts[chars.Last()]++;
+
+            var orderedCounts = counts.OrderBy(kvp => kvp.Value).ToList();
+            var min = orderedCounts.First().Value;
+            var max = orderedCounts.Last().Value;
 
             return max - min;
-        }
-
-        public long Solve2(List<string> input)
-        {
-            return 0;
         }
 
         private static Rule ParseRule(string s)
