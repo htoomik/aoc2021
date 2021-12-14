@@ -26,6 +26,12 @@ namespace AoC2021.Helpers
                 .ToList();
         }
 
+        public static Tuple<int, int> SplitToTuples(string data, char separator = ',')
+        {
+            var parts = data.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+            return new Tuple<int, int>(int.Parse(parts[0]), int.Parse(parts[1]));
+        }
+
         public static List<List<int>> SplitToIntegerGrid(string input)
         {
             return SplitLines(input)
