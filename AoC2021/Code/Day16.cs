@@ -1,19 +1,20 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
+using System.Linq;
 
 namespace AoC2021.Code
 {
     public class Day16
     {
-        public Transmission Parse(string line)
+        public Packet Parse(string line)
         {
-            return new Transmission(line);
+            return new Packet(HexToBinary(line));
         }
 
-        public int Solve(List<string> input)
+        public long Solve(string input)
         {
-            return 0;
+            var packet = Parse(input.Trim());
+            return packet.VersionSum();
         }
 
         public int Solve2(List<string> input)
@@ -21,18 +22,22 @@ namespace AoC2021.Code
             return 0;
         }
 
-        public class Transmission
+        public class Packet
         {
-            public int Version { get; }
+            public long Version { get; }
             public PacketType Type { get; }
             public int LengthType { get; }
-            public int PacketLength { get; }
-            public List<int> Values { get; }
+            public long Value { get; }
+            public int CharsConsumed { get; }
+            public List<Packet> SubPackets { get; } = new List<Packet>();
 
-            public Transmission(string line)
+            public long VersionSum()
             {
-                var binary = Convert.ToString(Convert.ToInt32(line, 16), 2);
+                return Version + SubPackets.Sum(p => p.VersionSum());
+            }
 
+            public Packet(string binary)
+            {
                 var versionString = binary.Substring(0, 3);
                 Version = BinaryParse(versionString);
 
@@ -57,14 +62,74 @@ namespace AoC2021.Code
                     }
 
                     var value = BinaryParse(allParts);
-                    Values = new List<int> { value };
+                    Value = value;
+                    CharsConsumed = pos;
+                }
+                else
+                {
+                    var lengthTypeIdString = binary.Substring(6, 1);
+                    LengthType = Convert.ToInt32(lengthTypeIdString);
+                    if (LengthType == 0)
+                    {
+                        var nextFifteen = binary.Substring(7, 15);
+                        var totalSubPacketLength = (int)BinaryParse(nextFifteen);
+
+                        var remainder = binary.Substring(22, totalSubPacketLength);
+                        var consumedBySubPackets = 0;
+
+                        while (true)
+                        {
+                            var subPacket = new Packet(remainder);
+                            SubPackets.Add(subPacket);
+                            var consumed = subPacket.CharsConsumed;
+                            consumedBySubPackets += consumed;
+                            remainder = remainder.Substring(consumed);
+                            if (consumedBySubPackets == totalSubPacketLength)
+                            {
+                                break;
+                            }
+                        }
+
+                        CharsConsumed = 6 + 1 + 15 + consumedBySubPackets;
+                    }
+                    else if (LengthType == 1)
+                    {
+                        var nextEleven = binary.Substring(7, 11);
+                        var subPacketCount = BinaryParse(nextEleven);
+
+                        var remainder = binary.Substring(18);
+                        var consumedBySubPackets = 0;
+
+                        for (var i = 0; i < subPacketCount; i++)
+                        {
+                            var subPacket = new Packet(remainder);
+                            SubPackets.Add(subPacket);
+                            var consumed = subPacket.CharsConsumed;
+                            consumedBySubPackets += consumed;
+                            remainder = remainder.Substring(consumed);
+                        }
+
+                        CharsConsumed = 6 + 1 + 11 + consumedBySubPackets;
+                    }
+                    else
+                    {
+                        throw new Exception();
+                    }
                 }
             }
 
-            private int BinaryParse(string s)
+            private long BinaryParse(string s)
             {
-                return Convert.ToInt32(s, 2);
+                return Convert.ToInt64(s, 2);
             }
+        }
+
+        private string HexToBinary(string s)
+        {
+            return string.Join(
+                string.Empty,
+                s.Select(c => Convert.ToString(Convert.ToInt32(c.ToString(), 16), 2).PadLeft(4, '0'))
+            );
         }
 
         public enum PacketType

@@ -16,8 +16,8 @@ namespace AoC2021.Tests
 
             result.Version.ShouldBe(6);
             result.Type.ShouldBe(Day16.PacketType.Literal);
-            result.Values.Count.ShouldBe(1);
-            result.Values[0].ShouldBe(2021);
+            result.Value.ShouldBe(2021);
+            result.CharsConsumed.ShouldBe(21);
         }
 
         [Test]
@@ -29,15 +29,32 @@ namespace AoC2021.Tests
             result.Version.ShouldBe(1);
             result.Type.ShouldBe(Day16.PacketType.Operator);
             result.LengthType.ShouldBe(0);
-            result.PacketLength.ShouldBe(27);
-            result.Values.Count.ShouldBe(27);
-            result.Values[0].ShouldBe(2021);
+            result.SubPackets.Count.ShouldBe(2);
+            result.CharsConsumed.ShouldBe(49);
+            result.SubPackets[0].Value.ShouldBe(10);
+            result.SubPackets[1].Value.ShouldBe(20);
+        }
+
+        [Test]
+        public void Example1C()
+        {
+            const string input = "EE00D40C823060";
+            var result = new Day16().Parse(input);
+
+            result.Version.ShouldBe(7);
+            result.Type.ShouldBe(Day16.PacketType.Operator);
+            result.LengthType.ShouldBe(1);
+            result.SubPackets.Count.ShouldBe(3);
+            result.CharsConsumed.ShouldBe(51);
+            result.SubPackets[0].Value.ShouldBe(1);
+            result.SubPackets[1].Value.ShouldBe(2);
+            result.SubPackets[2].Value.ShouldBe(3);
         }
 
         [Test]
         public void Part1()
         {
-            var input = DataHelper.ReadLines(0);
+            var input = DataHelper.ReadFile(16);
             var result = new Day16().Solve(input);
             Console.WriteLine(result);
         }
