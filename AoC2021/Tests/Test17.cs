@@ -13,50 +13,39 @@ namespace AoC2021.Tests
         public void Example1()
         {
             const string input = "target area: x=20..30, y=-10..-5";
-            var result = new Day17().Solve(input);
-            result.ShouldBe(45);
+            var (peak, hits) = new Day17().Solve(input);
+            peak.ShouldBe(45);
+            hits.ShouldBe(112);
         }
 
-        [TestCase(7, 2, 20, 30, -10, -5, true, 3, false)]
-        [TestCase(6, 3, 20, 30, -10, -5, true, 6, false)]
-        [TestCase(9, 0, 20, 30, -10, -5, true, 0, false)]
-        [TestCase(17, -4, 20, 30, -10, -5, false, 0, true)]
-        [TestCase(6, 9, 20, 30, -10, -5, true, 45, false)]
-        [TestCase(6, 10, 20, 30, -10, -5, false, 55, false)]
+        [TestCase(7, 2, true, 3, false)]
+        [TestCase(6, 3, true, 6, false)]
+        [TestCase(9, 0, true, 0, false)]
+        [TestCase(17, -4, false, 0, true)]
+        [TestCase(6, 9, true, 45, false)]
+        [TestCase(6, 10, false, 55, false)]
         public void TestShoot(
-            int x, int y, int minX, int maxX, int minY, int maxY,
-            bool expectedHit, int expectedPeak, bool expectedOvershoot)
+            int x, int y, bool expectedHit, int expectedPeak, bool expectedOvershoot)
         {
-            var (hit, peak, undershoot, overshoot) = new Day17().Shoot(x, y, minX, maxX, minY, maxY);
+            var (hit, peak, undershoot, overshoot) = new Day17().Shoot(x, y, 20, 30, -10, -5);
             hit.ShouldBe(expectedHit);
             peak.ShouldBe(expectedPeak);
             overshoot.ShouldBe(expectedOvershoot);
         }
 
+        [TestCase(23, -10)]
+        [TestCase(25, -7)]
+        public void Example2(int x, int y)
+        {
+            var (hit, _, _, _) = new Day17().Shoot(x, y, 20, 30, -10, -5);
+            hit.ShouldBeTrue();
+        }
+
         [Test]
-        public void Part1()
+        public void Solve()
         {
             var input = DataHelper.ReadFile(17);
             var result = new Day17().Solve(input);
-            Console.WriteLine(result);
-            // 666 too low
-        }
-
-        [Test]
-        public void Example2()
-        {
-            const string data = @"
-";
-            var input = DataHelper.SplitLines(data);
-            var result = new Day17().Solve2(input);
-            result.ShouldBe(0);
-        }
-
-        [Test]
-        public void Part2()
-        {
-            var input = DataHelper.ReadLines(0);
-            var result = new Day17().Solve2(input);
             Console.WriteLine(result);
         }
     }

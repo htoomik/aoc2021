@@ -5,7 +5,7 @@ namespace AoC2021.Code
 {
     public class Day17
     {
-        public int Solve(string input)
+        public (int, int) Solve(string input)
         {
             // target area: x=20..30, y=-10..-5
             var parts = input.Replace("target area: x=", "").Split(", y=");
@@ -18,14 +18,17 @@ namespace AoC2021.Code
             var maxY = int.Parse(yParts[1]);
 
             var best = 0;
-            for (var x = 1; x < minX; x++)
+            var hits = 0;
+
+            for (var x = 1; x <= maxX; x++)
             {
-                for (var y = 1; y < 1000; y++)
+                for (var y = -1000; y < 1000; y++)
                 {
                     var (hit, peak, hopelessX, hopelessY) = Shoot(x, y, minX, maxX, minY, maxY);
                     if (hit)
                     {
-                        Console.WriteLine($"Found a working combination: x {x}, y {y}, peak {peak}");
+                        // Console.WriteLine($"Found a working combination: x {x}, y {y}, peak {peak}");
+                        hits++;
                         if (peak > best)
                         {
                             best = peak;
@@ -34,19 +37,19 @@ namespace AoC2021.Code
 
                     if (hopelessX)
                     {
-                        Console.WriteLine($"x {x} will never reach");
+                        // Console.WriteLine($"x {x} will never reach");
                         break;
                     }
 
                     if (hopelessY)
                     {
-                        Console.WriteLine($"x {x} y {y} is too much");
+                        // Console.WriteLine($"x {x} y {y} is too much");
                         break;
                     }
                 }
             }
 
-            return best;
+            return (best, hits);
         }
 
         public (bool, int, bool, bool) Shoot(int initialX, int initialY, int minX, int maxX, int minY, int maxY)
