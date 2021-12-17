@@ -17,9 +17,10 @@ namespace AoC2021.Code
             return packet.VersionSum();
         }
 
-        public int Solve2(List<string> input)
+        public long Solve2(string input)
         {
-            return 0;
+            var packet = Parse(input.Trim());
+            return packet.Evaluate();
         }
 
         public class Packet
@@ -43,7 +44,7 @@ namespace AoC2021.Code
 
                 var typeString = binary.Substring(3, 3);
                 var typeValue = BinaryParse(typeString);
-                Type = typeValue == 4 ? PacketType.Literal : PacketType.Operator;
+                Type = (PacketType)typeValue;
 
                 if (Type == PacketType.Literal)
                 {
@@ -122,6 +123,22 @@ namespace AoC2021.Code
             {
                 return Convert.ToInt64(s, 2);
             }
+
+            public long Evaluate()
+            {
+                switch (Type)
+                {
+                    case PacketType.Literal: return Value;
+                    case PacketType.Sum: return SubPackets.Sum(s => s.Evaluate());
+                    case PacketType.Product: return SubPackets.Aggregate(1L, (i, packet) => i * packet.Evaluate());
+                    case PacketType.Minimum: return SubPackets.Min(s => s.Evaluate());
+                    case PacketType.Maximum: return SubPackets.Max(s => s.Evaluate());
+                    case PacketType.GreaterThan: return SubPackets[0].Evaluate() > SubPackets[1].Evaluate() ? 1 : 0;
+                    case PacketType.LessThan: return SubPackets[0].Evaluate() < SubPackets[1].Evaluate() ? 1 : 0;
+                    case PacketType.EqualTo: return SubPackets[0].Evaluate() == SubPackets[1].Evaluate() ? 1 : 0;
+                    default: throw new Exception();
+                }
+            }
         }
 
         private string HexToBinary(string s)
@@ -134,9 +151,14 @@ namespace AoC2021.Code
 
         public enum PacketType
         {
-            Unknown,
-            Literal,
-            Operator
+            Sum = 0,
+            Product = 1,
+            Minimum = 2,
+            Maximum = 3,
+            Literal = 4,
+            GreaterThan = 5,
+            LessThan = 6,
+            EqualTo = 7
         }
     }
 }

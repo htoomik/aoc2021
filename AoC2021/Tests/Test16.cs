@@ -27,7 +27,6 @@ namespace AoC2021.Tests
             var result = new Day16().Parse(input);
 
             result.Version.ShouldBe(1);
-            result.Type.ShouldBe(Day16.PacketType.Operator);
             result.LengthType.ShouldBe(0);
             result.SubPackets.Count.ShouldBe(2);
             result.CharsConsumed.ShouldBe(49);
@@ -42,7 +41,6 @@ namespace AoC2021.Tests
             var result = new Day16().Parse(input);
 
             result.Version.ShouldBe(7);
-            result.Type.ShouldBe(Day16.PacketType.Operator);
             result.LengthType.ShouldBe(1);
             result.SubPackets.Count.ShouldBe(3);
             result.CharsConsumed.ShouldBe(51);
@@ -59,20 +57,24 @@ namespace AoC2021.Tests
             Console.WriteLine(result);
         }
 
-        [Test]
-        public void Example2()
+        [TestCase("C200B40A82", 3)]
+        [TestCase("04005AC33890", 54)]
+        [TestCase("880086C3E88112", 7)]
+        [TestCase("CE00C43D881120", 9)]
+        [TestCase("D8005AC2A8F0", 1)]
+        [TestCase("F600BC2D8F", 0)]
+        [TestCase("9C005AC2F8F0", 0)]
+        [TestCase("9C0141080250320F1802104A08", 1)]
+        public void Example2(string input, int expected)
         {
-            const string data = @"
-";
-            var input = DataHelper.SplitLines(data);
             var result = new Day16().Solve2(input);
-            result.ShouldBe(0);
+            result.ShouldBe(expected);
         }
 
         [Test]
         public void Part2()
         {
-            var input = DataHelper.ReadLines(0);
+            var input = DataHelper.ReadFile(16);
             var result = new Day16().Solve2(input);
             Console.WriteLine(result);
         }
