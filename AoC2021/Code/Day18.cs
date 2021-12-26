@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 
 namespace AoC2021.Code
 {
     public class Day18
     {
         private static readonly string Nums = "0123456789";
+        private List<Node> AllNodes = new List<Node>();
 
         public int Solve(List<string> input)
         {
@@ -22,7 +24,28 @@ namespace AoC2021.Code
             return 0;
         }
 
-        public static (Node, int) Parse(char[] chars, int i = 1, int level = 0, Node parent = null)
+        public Node Parse(char[] chars)
+        {
+            var (result, _) = ParseInner(chars, 1, 0);
+
+            AddRecursively(result);
+
+            return result;
+        }
+
+        private void AddRecursively(Node node)
+        {
+            if (node == null)
+            {
+                return;
+            }
+
+            AllNodes.Add(node);
+            AddRecursively(node.Left);
+            AddRecursively(node.Right);
+        }
+
+        public (Node, int) ParseInner(char[] chars, int i, int level)
         {
             Node left;
             Node right;
@@ -30,12 +53,12 @@ namespace AoC2021.Code
             var value = chars[i];
             if (Nums.Contains(value))
             {
-                left = new Node { Value = value - 48, Level = level };
+                left = new Node { Value = value - 48, Level = level + 1 };
                 i++;
             }
             else if (value == '[')
             {
-                (left, i) = Parse(chars, i + 1, level + 1);
+                (left, i) = ParseInner(chars, i + 1, level + 1);
                 i++;
             }
             else
@@ -48,12 +71,12 @@ namespace AoC2021.Code
             var value2 = chars[i];
             if (Nums.Contains(value2))
             {
-                right = new Node { Value = value2 - 48, Level = level};
+                right = new Node { Value = value2 - 48, Level = level + 1};
                 i++;
             }
             else if (value2 == '[')
             {
-                (right, i) = Parse(chars, i + 1, level + 1);
+                (right, i) = ParseInner(chars, i + 1, level + 1);
                 i++;
             }
             else
@@ -62,42 +85,89 @@ namespace AoC2021.Code
             }
 
             var node = new Node() { Left = left, Right = right, Level = level};
+
             left.Parent = node;
             right.Parent = node;
 
             return (node, i);
         }
 
-        public static void Reduce(Node node)
+        public bool Reduce(Node node, bool top = true)
         {
             if (node == null)
             {
-                return;
+                return false;
             }
 
-            if (node.Level == 4)
+            if (node.Level == 4 && !node.Value.HasValue) // not already exploded
             {
-                var nearestRegularToTheLeft = node.GetNearestRegularToTheLeft();
+                Console.WriteLine("Explode");
+
+                var nearestRegularToTheLeft = node.Left.GetNearestRegularToTheLeft(AllNodes);
                 if (nearestRegularToTheLeft != null)
                 {
                     nearestRegularToTheLeft.Value += node.Left.Value;
                 }
 
-                var nearestRegularToTheRight = node.GetNearestRegularToTheRight();
+                var nearestRegularToTheRight = node.Right.GetNearestRegularToTheRight(AllNodes);
                 if (nearestRegularToTheRight != null)
                 {
                     nearestRegularToTheRight.Value += node.Right.Value;
                 }
 
+                AllNodes.Remove(node.Left);
+                AllNodes.Remove(node.Right);
                 node.Left = null;
                 node.Right = null;
                 node.Value = 0;
+
+                return true;
+            }
+
+            if (node.Value.HasValue && node.Value >= 10)
+            {
+                Console.WriteLine("split");
+                var newLeftValue = node.Value.Value / 2;
+                var newRightValue = (node.Value.Value + 1) / 2;
+
+                node.Left = new Node { Value = newLeftValue, Level = node.Level + 1, Parent = node };
+                node.Right = new Node { Value = newRightValue, Level = node.Level + 1, Parent = node };
+                node.Value = null;
+
+                var index = AllNodes.IndexOf(node) + 1;
+                AllNodes.Insert(index, node.Right);
+                AllNodes.Insert(index, node.Left);
+
+                return true;
+            }
+
+            if (top)
+            {
+                var aborted = true;
+                while (aborted)
+                {
+                    var leftAborted = Reduce(node.Left, false);
+                    aborted = leftAborted || Reduce(node.Right, false);
+                }
             }
             else
             {
-                Reduce(node.Left);
-                Reduce(node.Right);
+                var leftAborted = Reduce(node.Left, false);
+
+                if (leftAborted)
+                {
+                    return true;
+                }
+
+                var rightAborted = Reduce(node.Right, false);
+
+                if (rightAborted)
+                {
+                    return true;
+                }
             }
+
+            return false;
         }
 
         public class Node
@@ -118,36 +188,20 @@ namespace AoC2021.Code
                 return $"[{Left},{Right}]";
             }
 
-            public Node GetNearestRegularToTheLeft()
+            public Node GetNearestRegularToTheLeft(List<Node> allNodes)
             {
-                if (Parent == null)
-                {
-                    return null;
-                }
-
-                if (Parent.Left.Value.HasValue)
-                {
-                    return Parent.Left;
-                }
-
-                return Parent.GetNearestRegularToTheLeft();
-
+                var index = allNodes.IndexOf(this);
+                var candidates = allNodes.Take(index);
+                var result = candidates.LastOrDefault(n => n.Value.HasValue);
+                return result;
             }
 
-            public Node GetNearestRegularToTheRight()
+            public Node GetNearestRegularToTheRight(List<Node> allNodes)
             {
-                if (Parent == null)
-                {
-                    return null;
-                }
-
-                if (Parent.Right.Value.HasValue)
-                {
-                    return Parent.Right;
-                }
-
-                return Parent.GetNearestRegularToTheRight();
-
+                var index = allNodes.IndexOf(this);
+                var candidates = allNodes.Skip(index + 1);
+                var result = candidates.FirstOrDefault(n => n.Value.HasValue);
+                return result;
             }
         }
     }

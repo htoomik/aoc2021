@@ -11,7 +11,7 @@ namespace AoC2021.Tests
         [Test]
         public void Parse1()
         {
-            var (node, _) = Day18.Parse("[1,2]".ToCharArray());
+            var node = new Day18().Parse("[1,2]".ToCharArray());
             node.Left.Value.ShouldBe(1);
             node.Right.Value.ShouldBe(2);
         }
@@ -19,7 +19,7 @@ namespace AoC2021.Tests
         [Test]
         public void Parse2()
         {
-            (var node, _) = Day18.Parse("[[1,2],3]".ToCharArray());
+            var node = new Day18().Parse("[[1,2],3]".ToCharArray());
             node.Left.Left.Value.ShouldBe(1);
             node.Left.Right.Value.ShouldBe(2);
             node.Right.Value.ShouldBe(3);
@@ -28,18 +28,19 @@ namespace AoC2021.Tests
         [TestCase("[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]")]
         public void Parse3(string input)
         {
-            var (node, _) = Day18.Parse(input.ToCharArray());
+            var node = new Day18().Parse(input.ToCharArray());
             node.ToString().ShouldBe(input);
         }
 
         [TestCase("[[[[[9,8],1],2],3],4]", "[[[[0,9],2],3],4]")]
         [TestCase("[7,[6,[5,[4,[3,2]]]]]", "[7,[6,[5,[7,0]]]]")]
         [TestCase("[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]", "[[3,[2,[8,0]]],[9,[5,[7,0]]]]")]
-        public void Reduce1(string input, string expected)
+        [TestCase("[[[[[4,3],4],4],[7,[[8,4],9]]],[1,1]]", "[[[[0,7],4],[[7,8],[6,0]]],[8,1]]")]
+        public void Reduce(string input, string expected)
         {
-            var (node, _) = Day18.Parse(input.ToCharArray());
-
-            Day18.Reduce(node);
+            var day18 = new Day18();
+            var node = day18.Parse(input.ToCharArray());
+            day18.Reduce(node);
             node.ToString().ShouldBe(expected);
         }
 
