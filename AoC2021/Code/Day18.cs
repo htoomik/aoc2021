@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.Xml;
 
 namespace AoC2021.Code
 {
@@ -10,13 +9,33 @@ namespace AoC2021.Code
         private static readonly string Nums = "0123456789";
         private List<Node> AllNodes = new List<Node>();
 
-        public int Solve(List<string> input)
+        public (string, int) Solve(List<string> input)
         {
-            var data = input.Select(s => Parse(s.ToCharArray()));
+            var data = input.Select(s => Parse(s.ToCharArray())).ToList();
 
+            var agg = data[0];
+            for (var i = 1; i < data.Count; i++)
+            {
+                Console.WriteLine($"  {agg}");
 
+                var add = data[i];
+                Console.WriteLine($"+ {add}");
 
-            return 0;
+                agg = Add(agg, add);
+                Console.WriteLine($"= {agg}");
+
+                Console.WriteLine();
+            }
+
+            return (agg.ToString(), 0);
+        }
+
+        private Node Add(Node left, Node right)
+        {
+            var newString = $"[{left},{right}]";
+            var newNode = Parse(newString.ToCharArray());
+            Reduce(newNode);
+            return newNode;
         }
 
         public int Solve2(List<string> input)
@@ -28,6 +47,7 @@ namespace AoC2021.Code
         {
             var (result, _) = ParseInner(chars, 1, 0);
 
+            AllNodes = new List<Node>();
             AddRecursively(result);
 
             return result;
@@ -45,7 +65,7 @@ namespace AoC2021.Code
             AddRecursively(node.Right);
         }
 
-        public (Node, int) ParseInner(char[] chars, int i, int level)
+        private static (Node, int) ParseInner(char[] chars, int i, int level)
         {
             Node left;
             Node right;
@@ -101,7 +121,7 @@ namespace AoC2021.Code
 
             if (node.Level == 4 && !node.Value.HasValue) // not already exploded
             {
-                Console.WriteLine("Explode");
+                // Console.WriteLine("Explode");
 
                 var nearestRegularToTheLeft = node.Left.GetNearestRegularToTheLeft(AllNodes);
                 if (nearestRegularToTheLeft != null)
@@ -126,7 +146,7 @@ namespace AoC2021.Code
 
             if (node.Value.HasValue && node.Value >= 10)
             {
-                Console.WriteLine("split");
+                // Console.WriteLine("split");
                 var newLeftValue = node.Value.Value / 2;
                 var newRightValue = (node.Value.Value + 1) / 2;
 

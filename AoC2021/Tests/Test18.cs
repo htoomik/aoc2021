@@ -45,7 +45,80 @@ namespace AoC2021.Tests
         }
 
         [Test]
-        public void Example1()
+        public void Example1A()
+        {
+            const string data = @"
+[1,1]
+[2,2]
+[3,3]
+[4,4]";
+            var input = DataHelper.SplitLines(data);
+            var (result, _) = new Day18().Solve(input);
+            result.ShouldBe("[[[[1,1],[2,2]],[3,3]],[4,4]]");
+        }
+
+        [Test]
+        public void Example1B()
+        {
+            const string data = @"
+[1,1]
+[2,2]
+[3,3]
+[4,4]
+[5,5]";
+            var input = DataHelper.SplitLines(data);
+            var (result, _) = new Day18().Solve(input);
+            result.ShouldBe("[[[[3,0],[5,3]],[4,4]],[5,5]]");
+        }
+
+        [Test]
+        public void Example1C()
+        {
+            const string data = @"
+[1,1]
+[2,2]
+[3,3]
+[4,4]
+[5,5]
+[6,6]";
+            var input = DataHelper.SplitLines(data);
+            var (result, _) = new Day18().Solve(input);
+            result.ShouldBe("[[[[5,0],[7,4]],[5,5]],[6,6]]");
+        }
+
+        [Test]
+        public void Example1D()
+        {
+            const string data = @"
+[[[[4,3],4],4],[7,[[8,4],9]]]
+[1,1]";
+            var input = DataHelper.SplitLines(data);
+            var (result, _) = new Day18().Solve(input);
+            result.ShouldBe("[[[[0,7],4],[[7,8],[6,0]]],[8,1]]");
+        }
+
+        [Test]
+        public void Example1E()
+        {
+            const string data = @"
+[[[0,[4,5]],[0,0]],[[[4,5],[2,6]],[9,5]]]
+[7,[[[3,7],[4,3]],[[6,3],[8,8]]]]
+[[2,[[0,8],[3,4]]],[[[6,7],1],[7,[1,6]]]]
+[[[[2,4],7],[6,[0,5]]],[[[6,8],[2,8]],[[2,1],[4,5]]]]
+[7,[5,[[3,8],[1,4]]]]
+[[2,[2,2]],[8,[8,1]]]
+[2,9]
+[1,[[[9,3],9],[[9,0],[0,7]]]]
+[[[5,[7,4]],7],1]
+[[[[4,2],2],6],[8,7]]";
+            var input = DataHelper.SplitLines(data);
+            var (result, sum) = new Day18().Solve(input);
+            result.ShouldBe("[[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]");
+            sum.ShouldBe(4140);
+        }
+
+        [Test]
+        public void Example1F()
         {
             const string data = @"
 [[[0,[5,8]],[[1,7],[9,6]]],[[4,[1,2]],[[1,4],2]]]
@@ -59,8 +132,9 @@ namespace AoC2021.Tests
 [[2,[[7,7],7]],[[5,8],[[9,3],[0,2]]]]
 [[[[5,2],5],[8,[3,7]]],[[5,[7,5]],[4,4]]]";
             var input = DataHelper.SplitLines(data);
-            var result = new Day18().Solve(input);
-            result.ShouldBe(4140);
+            var (result, sum) = new Day18().Solve(input);
+            result.ShouldBe("[[[[6,6],[7,6]],[[7,7],[7,0]]],[[[7,7],[7,7]],[[7,8],[9,9]]]]");
+            sum.ShouldBe(4140);
         }
 
         [Test]
