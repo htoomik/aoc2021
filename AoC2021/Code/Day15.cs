@@ -1,82 +1,69 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using AoC2021.Helpers;
 
 namespace AoC2021.Code
 {
     public class Day15
     {
-        public int SolveA(string input)
+        private List<List<Node>> _nodes;
+
+        public int Solve(string input)
         {
             var grid = DataHelper.SplitToIntegerGrid(input);
-            var max = grid.Count - 1;
+            _nodes = grid
+                .Select((row, y) => row
+                    .Select((n, x) => new Node(x, y, n))
+                    .ToList())
+                .ToList();
 
-            var best = int.MaxValue;
+            var queue = new Queue<(int, int)>();
+            _nodes[0][0].InQueue = true;
+            queue.Enqueue((0, 0));
 
-            var queue = new Queue<Path>();
-            queue.Enqueue(new Path(0, 0, 0));
-
-            while (queue.TryDequeue(out var candidate))
+            while (queue.TryDequeue(out var coords))
             {
-                if (candidate.X == max && candidate.Y == max)
+                var node = _nodes[coords.Item1][coords.Item2];
+                node.Visited = true;
+                node.InQueue = false;
+
+                var neighbours = GetNeighbours(node);
+
+                foreach (var neighbour in neighbours)
                 {
-                    if (candidate.TotalRisk < best)
+                    if (neighbour.Visited || neighbour.InQueue)
                     {
-                        best = candidate.TotalRisk;
+                        if (neighbour.Distance > neighbour.Weight + node.Distance)
+                        {
+                            neighbour.Distance = neighbour.Weight + node.Distance;
+                            Console.WriteLine($"Improved distance to {neighbour.Y}, {neighbour.X} is {neighbour.Distance} via {node.Y}, {node.X}");
+                        }
+                    }
+                    else
+                    {
+                        neighbour.Distance = neighbour.Weight + node.Distance;
+                        Console.WriteLine($"Distance to {neighbour.Y}, {neighbour.X} is {neighbour.Distance} via {node.Y}, {node.X}");
+                        neighbour.InQueue = true;
+                        queue.Enqueue((neighbour.Y, neighbour.X));
                     }
                 }
-                else
-                {
-                    if (candidate.Y != max)
-                    {
-                        var next = candidate.Move(0, 1, grid[candidate.Y + 1][candidate.X]);
-                        queue.Enqueue(next);
-                    }
-
-                    if (candidate.X != max)
-                    {
-                        var next = candidate.Move(1, 0, grid[candidate.Y][candidate.X + 1]);
-                        queue.Enqueue(next);
-                    }
-                }
             }
 
-            return best;
+            return _nodes[^1][^1].Distance;
         }
 
-        private List<List<int>> _grid;
-        private int _max;
-
-        public int SolveB(string input)
+        private IEnumerable<Node> GetNeighbours(Node node)
         {
-            _grid = DataHelper.SplitToIntegerGrid(input);
-            _max = _grid.Count - 1;
-
-            var result = Go(0, 0, 0);
-            return result;
-        }
-
-        private int Go(int x, int y, int r)
-        {
-            if (x == _max && y == _max)
+            if (node.X < _nodes.Count - 1)
             {
-                return r;
+                yield return _nodes[node.Y][node.X + 1];
             }
 
-            var goDown = int.MaxValue;
-            var goRight = int.MaxValue;
-
-            if (y < _max)
+            if (node.Y < _nodes.Count - 1)
             {
-                goDown = Go(x, y + 1, r + _grid[y + 1][x]);
+                yield return _nodes[node.Y + 1][node.X];
             }
-
-            if (x < _max)
-            {
-                goRight = Go(x + 1, y, r + _grid[y][x + 1]);
-            }
-
-            return Math.Min(goDown, goRight);
         }
 
         public int Solve2(List<string> input)
@@ -100,6 +87,26 @@ namespace AoC2021.Code
             public Path Move(int x, int y, int r)
             {
                 return new Path(X + x, Y + y, TotalRisk + r);
+            }
+        }
+
+        private class Node
+        {
+            public int Distance;
+            public readonly int Y;
+            public readonly int X;
+            public readonly int Weight;
+            public bool InQueue;
+            public bool Visited;
+
+            public Node(int x, int y, int weight)
+            {
+                X = x;
+                Y = y;
+                Weight = weight;
+                Distance = 0;
+                InQueue = false;
+                Visited = false;
             }
         }
     }

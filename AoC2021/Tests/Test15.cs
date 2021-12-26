@@ -9,7 +9,7 @@ namespace AoC2021.Tests
     public class Test15
     {
         [Test]
-        public void Example1A()
+        public void Example1()
         {
             const string input = @"
 1163751742
@@ -22,42 +22,17 @@ namespace AoC2021.Tests
 3125421639
 1293138521
 2311944581";
-            var result = new Day15().SolveA(input);
+            var result = new Day15().Solve(input);
             result.ShouldBe(40);
         }
 
         [Test]
-        public void Example1B()
-        {
-            const string input = @"
-1163751742
-1381373672
-2136511328
-3694931569
-7463417111
-1319128137
-1359912421
-3125421639
-1293138521
-2311944581";
-            var result = new Day15().SolveB(input);
-            result.ShouldBe(40);
-        }
-
-        [Test]
-        public void Part1A()
+        public void Part1()
         {
             var input = DataHelper.ReadFile(15);
-            var result = new Day15().SolveA(input);
+            var result = new Day15().Solve(input);
             Console.WriteLine(result);
-        }
-
-        [Test]
-        public void Part1B()
-        {
-            var input = DataHelper.ReadFile(15);
-            var result = new Day15().SolveB(input);
-            Console.WriteLine(result);
+            // 459 too high
         }
 
         [Test]
@@ -73,7 +48,7 @@ namespace AoC2021.Tests
         [Test]
         public void Part2()
         {
-            var input = DataHelper.ReadLines(0);
+            var input = DataHelper.ReadLines(15);
             var result = new Day15().Solve2(input);
             Console.WriteLine(result);
         }
