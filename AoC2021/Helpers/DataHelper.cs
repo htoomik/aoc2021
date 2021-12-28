@@ -60,6 +60,12 @@ namespace AoC2021.Helpers
             return File.ReadAllText(path);
         }
 
+        public static string ReadFile(string fileName)
+        {
+            var path = $"c:\\code\\aoc2021\\aoc2021\\data\\{fileName}";
+            return File.ReadAllText(path);
+        }
+
         private static string GetPath(int day)
         {
             var fileName = $"input{day:00}.txt";
