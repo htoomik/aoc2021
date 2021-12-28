@@ -40,7 +40,25 @@ namespace AoC2021.Code
 
         public int Solve2(List<string> input)
         {
-            return 0;
+            var best = 0;
+            for (var i = 0; i < input.Count; i++)
+            {
+                for (var j = 0; j < input.Count; j++)
+                {
+                    if (i == j)
+                    {
+                        continue;
+                    }
+
+                    var (_, result) = Solve(new List<string> { input[i], input[j] });
+                    if (result > best)
+                    {
+                        best = result;
+                    }
+                }
+            }
+
+            return best;
         }
 
         public Node Parse(char[] chars)
