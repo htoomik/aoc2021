@@ -49,17 +49,25 @@ namespace AoC2021.Tests
         [Test]
         public void Example2()
         {
-            const string data = @"
-";
-            var input = DataHelper.SplitLines(data);
+            const string input = @"
+1163751742
+1381373672
+2136511328
+3694931569
+7463417111
+1319128137
+1359912421
+3125421639
+1293138521
+2311944581";
             var result = new Day15().Solve2(input);
-            result.ShouldBe(0);
+            result.ShouldBe(315);
         }
 
         [Test]
         public void Part2()
         {
-            var input = DataHelper.ReadLines(15);
+            var input = DataHelper.ReadFile(15);
             var result = new Day15().Solve2(input);
             Console.WriteLine(result);
         }

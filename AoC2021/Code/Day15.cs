@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using AoC2021.Helpers;
 
 namespace AoC2021.Code
@@ -37,7 +38,7 @@ namespace AoC2021.Code
                         if (neighbour.Distance > neighbour.Weight + node.Distance)
                         {
                             neighbour.Distance = neighbour.Weight + node.Distance;
-                            Console.WriteLine($"Improved distance to {neighbour.Y}, {neighbour.X} is {neighbour.Distance} via {node.Y}, {node.X}");
+                            // Console.WriteLine($"Improved distance to {neighbour.Y}, {neighbour.X} is {neighbour.Distance} via {node.Y}, {node.X}");
                             neighbour.InQueue = true;
                             queue.Enqueue((neighbour.Y, neighbour.X));
                         }
@@ -45,7 +46,7 @@ namespace AoC2021.Code
                     else
                     {
                         neighbour.Distance = neighbour.Weight + node.Distance;
-                        Console.WriteLine($"Distance to {neighbour.Y}, {neighbour.X} is {neighbour.Distance} via {node.Y}, {node.X}");
+                        // Console.WriteLine($"Distance to {neighbour.Y}, {neighbour.X} is {neighbour.Distance} via {node.Y}, {node.X}");
                         neighbour.InQueue = true;
                         queue.Enqueue((neighbour.Y, neighbour.X));
                     }
@@ -82,9 +83,54 @@ namespace AoC2021.Code
             }
         }
 
-        public int Solve2(List<string> input)
+        public int Solve2(string input)
         {
-            return 0;
+            var newGrid = Repeat(input);
+
+            return Solve(newGrid);
+        }
+
+        private static string Repeat(string input)
+        {
+            var grid = DataHelper.SplitToIntegerGrid(input);
+            var newGrid = new List<List<int>>();
+
+            for (var r = 0; r < 5; r++)
+            {
+                for (var y = 0; y < grid.Count; y++)
+                {
+                    newGrid.Add(new List<int>());
+                    var row = r * grid.Count + y;
+
+                    for (var c = 0; c < 5; c++)
+                    {
+                        for (var x = 0; x < grid[0].Count; x++)
+                        {
+                            var originalValue = grid[y][x];
+                            var newValue = originalValue + r + c;
+                            if (newValue > 9)
+                            {
+                                newValue = newValue - 9;
+                            }
+
+                            newGrid[row].Add(newValue);
+                        }
+                    }
+                }
+            }
+
+            var sb = new StringBuilder();
+            for (int i = 0; i < newGrid.Count; i++)
+            {
+                for (int j = 0; j < newGrid[0].Count; j++)
+                {
+                    sb.Append(newGrid[i][j]);
+                }
+
+                sb.AppendLine();
+            }
+
+            return sb.ToString();
         }
 
         private readonly struct Path
