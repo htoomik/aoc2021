@@ -38,6 +38,8 @@ namespace AoC2021.Code
                         {
                             neighbour.Distance = neighbour.Weight + node.Distance;
                             Console.WriteLine($"Improved distance to {neighbour.Y}, {neighbour.X} is {neighbour.Distance} via {node.Y}, {node.X}");
+                            neighbour.InQueue = true;
+                            queue.Enqueue((neighbour.Y, neighbour.X));
                         }
                     }
                     else
@@ -55,11 +57,25 @@ namespace AoC2021.Code
 
         private IEnumerable<Node> GetNeighbours(Node node)
         {
-            if (node.X < _nodes.Count - 1)
+            // Left
+            if (node.X > 0)
+            {
+                yield return _nodes[node.Y][node.X - 1];
+            }
+
+            // Right
+            if (node.X < _nodes[0].Count - 1)
             {
                 yield return _nodes[node.Y][node.X + 1];
             }
 
+            // Up
+            if (node.Y > 0)
+            {
+                yield return _nodes[node.Y - 1][node.X];
+            }
+
+            // Down
             if (node.Y < _nodes.Count - 1)
             {
                 yield return _nodes[node.Y + 1][node.X];

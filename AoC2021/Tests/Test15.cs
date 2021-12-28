@@ -9,7 +9,7 @@ namespace AoC2021.Tests
     public class Test15
     {
         [Test]
-        public void Example1()
+        public void Example1A()
         {
             const string input = @"
 1163751742
@@ -24,6 +24,17 @@ namespace AoC2021.Tests
 2311944581";
             var result = new Day15().Solve(input);
             result.ShouldBe(40);
+        }
+
+        [Test]
+        public void Example1B()
+        {
+            const string input = @"
+19999
+19111
+11191";
+            var result = new Day15().Solve(input);
+            result.ShouldBe(8);
         }
 
         [Test]
