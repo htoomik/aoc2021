@@ -114,7 +114,6 @@ namespace AoC2021.Tests
             var input = DataHelper.SplitLines(data);
             var (result, sum) = new Day18().Solve(input);
             result.ShouldBe("[[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]");
-            sum.ShouldBe(4140);
         }
 
         [Test]
@@ -138,9 +137,20 @@ namespace AoC2021.Tests
         }
 
         [Test]
+        public void Example1G()
+        {
+            const string data = @"
+[[[[6,7],[6,7]],[[7,7],[0,7]]],[[[8,7],[7,7]],[[8,8],[8,0]]]]
+[[[[2,4],7],[6,[0,5]]],[[[6,8],[2,8]],[[2,1],[4,5]]]]";
+            var input = DataHelper.SplitLines(data);
+            var (result, sum) = new Day18().Solve(input);
+            result.ShouldBe("[[[[7,0],[7,7]],[[7,7],[7,8]]],[[[7,7],[8,8]],[[7,7],[8,7]]]]");
+        }
+
+        [Test]
         public void Part1()
         {
-            var input = DataHelper.ReadLines(0);
+            var input = DataHelper.ReadLines(18);
             var result = new Day18().Solve(input);
             Console.WriteLine(result);
         }

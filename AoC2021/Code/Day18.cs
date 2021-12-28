@@ -16,18 +16,18 @@ namespace AoC2021.Code
             var agg = data[0];
             for (var i = 1; i < data.Count; i++)
             {
-                Console.WriteLine($"  {agg}");
+                // Console.WriteLine($"  {agg}");
 
                 var add = data[i];
-                Console.WriteLine($"+ {add}");
+                // Console.WriteLine($"+ {add}");
 
                 agg = Add(agg, add);
-                Console.WriteLine($"= {agg}");
+                // Console.WriteLine($"= {agg}");
 
-                Console.WriteLine();
+                // Console.WriteLine();
             }
 
-            return (agg.ToString(), 0);
+            return (agg.ToString(), agg.Magnitude);
         }
 
         private Node Add(Node left, Node right)
@@ -112,7 +112,22 @@ namespace AoC2021.Code
             return (node, i);
         }
 
-        public bool Reduce(Node node, bool top = true)
+        public void Reduce(Node node)
+        {
+            var didStuff = true;
+            while (didStuff)
+            {
+                didStuff = false;
+                didStuff = didStuff || Explode(node.Left);
+                didStuff = didStuff || Explode(node.Right);
+                didStuff = didStuff || Split(node.Left);
+                didStuff = didStuff || Split(node.Right);
+
+                // Console.WriteLine(node);
+            }
+        }
+
+        private bool Explode(Node node)
         {
             if (node == null)
             {
@@ -121,7 +136,7 @@ namespace AoC2021.Code
 
             if (node.Level == 4 && !node.Value.HasValue) // not already exploded
             {
-                // Console.WriteLine("Explode");
+                // Console.Write("Explode: ");
 
                 var nearestRegularToTheLeft = node.Left.GetNearestRegularToTheLeft(AllNodes);
                 if (nearestRegularToTheLeft != null)
@@ -144,9 +159,33 @@ namespace AoC2021.Code
                 return true;
             }
 
-            if (node.Value.HasValue && node.Value >= 10)
+            var leftAborted = Explode(node.Left);
+
+            if (leftAborted)
             {
-                // Console.WriteLine("split");
+                return true;
+            }
+
+            var rightAborted = Explode(node.Right);
+
+            if (rightAborted)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool Split(Node node)
+        {
+            if (node == null)
+            {
+                return false;
+            }
+
+            if (node.Value is >= 10)
+            {
+                // Console.Write("Split: ");
                 var newLeftValue = node.Value.Value / 2;
                 var newRightValue = (node.Value.Value + 1) / 2;
 
@@ -161,30 +200,18 @@ namespace AoC2021.Code
                 return true;
             }
 
-            if (top)
+            var leftAborted = Split(node.Left);
+
+            if (leftAborted)
             {
-                var aborted = true;
-                while (aborted)
-                {
-                    var leftAborted = Reduce(node.Left, false);
-                    aborted = leftAborted || Reduce(node.Right, false);
-                }
+                return true;
             }
-            else
+
+            var rightAborted = Split(node.Right);
+
+            if (rightAborted)
             {
-                var leftAborted = Reduce(node.Left, false);
-
-                if (leftAborted)
-                {
-                    return true;
-                }
-
-                var rightAborted = Reduce(node.Right, false);
-
-                if (rightAborted)
-                {
-                    return true;
-                }
+                return true;
             }
 
             return false;
@@ -197,6 +224,8 @@ namespace AoC2021.Code
             public int? Value;
             public Node Parent { get; set; }
             public int Level { get; set; }
+
+            public int Magnitude => Value ?? Left.Magnitude * 3 + Right.Magnitude * 2;
 
             public override string ToString()
             {
